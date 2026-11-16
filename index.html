@@ -1,114 +1,173 @@
+
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>장안대학교 주변 병원 찾기</title>
 
-    <title>장안대학교 주변 병원 찾기</title>
+  <link rel="stylesheet" href="./CSS/style.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 
-    <link rel="stylesheet" href="./CSS/style.css">
-    <script src="./JS/javascript.js" defer></script>
+  <script defer
+    src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script defer src="./JS/javascript.js"></script>
 </head>
-
 <body>
 
-<header>
-    <h1>장안대학교 주변 병원 찾기</h1>
-    <p>장안대학교 근처 병원을 검색할 수 있습니다.</p>
+<header class="hero">
+  <div id="crossDecor" class="cross-decor" aria-hidden="true"></div>
+
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo"><span class="logo-cross"></span></div>
+      <div>
+        <h1 data-i18n="title">장안대학교 주변 병원 찾기</h1>
+        <p data-i18n="subtitle">
+          주변 병원, 약국, 주차장을 편리하게 찾아보세요.
+        </p>
+      </div>
+    </div>
+
+    <div class="language-box">
+      <label for="language" data-i18n="language">언어 선택</label>
+      <select id="language">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="zh">中文</option>
+        <option value="vi">Tiếng Việt</option>
+      </select>
+    </div>
+  </div>
 </header>
 
 <main>
+  <section class="top-grid">
+    <div class="panel">
+      <h2 data-i18n="searchTitle">병원 · 약국 검색</h2>
 
-    <section class="top-box">
+      <div class="search-row">
+        <input type="text" id="searchInput"
+          placeholder="병원 이름, 진료과, 약국 검색"
+          data-placeholder="searchPlaceholder">
+        <button id="searchBtn" data-i18n="search">검색</button>
+      </div>
 
-        <div class="search-area">
+      <div id="categoryButtons" class="category-buttons"></div>
 
-            <h2>병원 검색</h2>
+      <div class="option-row">
+        <select id="sortSelect">
+          <option value="distance">가까운 순</option>
+          <option value="name">이름순</option>
+          <option value="open">운영 중 우선</option>
+        </select>
 
-            <div class="search-row">
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="병원 이름 또는 진료과 입력"
-                >
+        <label>
+          <input type="checkbox" id="openOnly">
+          <span data-i18n="openOnly">운영 중만 보기 (예시)</span>
+        </label>
 
-                <button id="searchBtn">
-                    검색
-                </button>
-            </div>
-
-            <div id="filterBox" class="filter-box"></div>
-
-            <select id="sortSelect">
-                <option value="distance">가까운 순</option>
-                <option value="name">이름순</option>
-                <option value="open">진료 중 우선</option>
-            </select>
-
-        </div>
-
-
-        <div class="symptom-area">
-
-            <h2>증상으로 진료과 찾기</h2>
-
-            <input
-                type="text"
-                id="symptomInput"
-                placeholder="예: 배가 아파요"
-            >
-
-            <button id="symptomBtn">
-                진료과 추천
-            </button>
-
-            <p id="symptomResult"></p>
-
-        </div>
-
-    </section>
-
-
-    <section class="content-box">
-
-        <div class="hospital-box">
-
-            <h2>병원 목록</h2>
-
-            <p id="hospitalCount"></p>
-
-            <div id="hospitalList"></div>
-
-        </div>
-
-
-        <div class="map-box">
-
-            <h2>주변 지도</h2>
-
-            <div id="mapArea"></div>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<div id="modal" class="modal">
-
-    <div class="modal-content">
-
-        <button id="closeModal">
-            닫기
-        </button>
-
-        <div id="modalInfo"></div>
-
+        <label>
+          <input type="checkbox" id="favoriteOnly">
+          <span data-i18n="favoriteOnly">즐겨찾기만 보기</span>
+        </label>
+      </div>
     </div>
 
+    <div class="panel">
+      <h2 data-i18n="symptomTitle">증상으로 진료과 찾기</h2>
+
+      <p class="sub-text" data-i18n="symptomDescription">
+        증상을 입력하면 관련 진료과를 안내합니다.
+      </p>
+
+      <div class="search-row">
+        <input type="text" id="symptomInput"
+          placeholder="예: 배가 아파요"
+          data-placeholder="symptomPlaceholder">
+        <button id="symptomBtn" data-i18n="recommend">
+          진료과 추천
+        </button>
+      </div>
+
+      <p id="symptomResult" class="symptom-result"></p>
+
+      <p class="notice" data-i18n="medicalNotice">
+        증상 추천은 참고용이며 의학적 진단이 아닙니다.
+      </p>
+    </div>
+  </section>
+
+  <section class="bottom-grid">
+    <div class="panel list-panel">
+      <div class="panel-title-row">
+        <h2 data-i18n="listTitle">병원 · 약국 목록</h2>
+        <span id="resultCount"></span>
+      </div>
+
+      <p class="notice" data-i18n="dataNotice">
+        위치와 운영시간 일부는 시연용 정보입니다.
+      </p>
+
+      <div id="hospitalList"></div>
+    </div>
+
+    <div class="panel map-panel">
+      <div class="panel-title-row">
+        <h2 data-i18n="mapTitle">주변 지도</h2>
+        <button id="resetMapBtn" class="soft-btn"
+          data-i18n="resetMap">장안대학교로 이동</button>
+      </div>
+
+      <div class="map-filter-row">
+        <label>
+          <input type="checkbox" id="showHospital" checked>
+          <span data-i18n="showHospital">병원 표시</span>
+        </label>
+
+        <label>
+          <input type="checkbox" id="showPharmacy" checked>
+          <span data-i18n="showPharmacy">약국 표시</span>
+        </label>
+
+        <label>
+          <input type="checkbox" id="showParking" checked>
+          <span data-i18n="showParking">주차장 표시</span>
+        </label>
+      </div>
+
+      <div id="map"></div>
+      <div id="legend" class="legend"></div>
+
+      <p class="notice" data-i18n="mapNotice">
+        같은 건물의 마커는 구분을 위해 벌려 표시합니다.
+        정확한 위치는 외부 지도에서 확인하세요.
+      </p>
+
+      <div class="parking-wrap">
+        <div class="panel-title-row">
+          <h3 data-i18n="parkingTitle">주변 주차장</h3>
+          <span id="parkingCount"></span>
+        </div>
+        <div id="parkingList"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <button id="closeModal" class="close-btn"
+      aria-label="Close">✕</button>
+    <div id="modalBody"></div>
+  </div>
 </div>
+
+<footer data-i18n="footer">
+  장안대학교 주변 병원 찾기 · JavaScript 웹앱 프로젝트
+</footer>
 
 </body>
 </html>
